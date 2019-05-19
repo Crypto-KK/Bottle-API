@@ -63,3 +63,5 @@ class BaseModel(db.Model):
     def delete(self):
         self.status = 0
 
+    def __getitem__(self, item):
+        return getattr(self, item)

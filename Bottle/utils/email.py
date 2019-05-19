@@ -1,4 +1,4 @@
-from Bottle import mail
+from extensions import mail
 from flask_mail import Message
 from flask import current_app, render_template
 import threading

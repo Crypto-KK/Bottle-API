@@ -1,16 +1,22 @@
+from flask import g
 from werkzeug.exceptions import HTTPException
+
 
 from Bottle import create_app
 from Bottle.errors.error import APIException
-from errors.error_code import ServerError
+from Bottle.errors.error_code import ServerError
+
 
 app = create_app('development')
 
+
+
+
 @app.errorhandler(Exception)
 def framework_error(e):
-    #raise e
+    # raise e
     if isinstance(e, APIException):
-        raise e
+        return e
     if isinstance(e, HTTPException):
         code = e.code
         msg = e.description

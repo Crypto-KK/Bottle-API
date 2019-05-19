@@ -18,6 +18,7 @@ class AuthFailed(APIException):
     msg = '认证失败'
     error_code = 1002
 
+
 class Forbidden(APIException):
     code = 403
     msg = '禁止访问,权限不足'
@@ -39,3 +40,12 @@ class ServerError(APIException):
     code = 500
     msg = '未知错误'
     error_code = 999
+
+
+'''业务相关错误'''
+
+
+class VerifyCodeError(APIException):
+    code = 401
+    msg = '验证码错误'
+    error_code = 2001

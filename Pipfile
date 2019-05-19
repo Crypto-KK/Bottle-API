@@ -17,6 +17,8 @@ flask-httpauth = "*"
 requests = "*"
 python-dotenv = "*"
 flask-mail = "*"
+redis = "*"
+flask-limiter = "*"
 
 [requires]
 python_version = "3.7"
