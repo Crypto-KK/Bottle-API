@@ -1,7 +1,8 @@
 from datetime import datetime
-from flask import jsonify, render_template, request, current_app, g, json
-from itsdangerous import TimedJSONWebSignatureSerializer
-from itsdangerous import BadSignature, SignatureExpired
+from flask import jsonify, current_app, g
+
+from Bottle.utils.auth import auth, auto_load_token, \
+    generate_auth_token, appkey_require
 from Bottle.utils.redprint import Redprint
 from Bottle.models.user import User
 from Bottle.forms.user import UserRegisterForm, EmailForm, \
@@ -74,16 +75,7 @@ def login():
 def get_token_info():
     '''获取令牌具体信息'''
     form = TokenForm().validate_for_api()
-    s = TimedJSONWebSignatureSerializer(
-        current_app.config['SECRET_KEY'],
-    )
-    try:
-        data = s.loads(form.token.data, return_header=True)
-    except SignatureExpired:
-        raise AuthFailed(msg='token过期')
-    except BadSignature:
-        raise AuthFailed(msg='token错误')
-
+    data = auto_load_token(form.token.data)
     res = {
         'uid': data[0]['uid'],
         'scope': data[0]['scope'],
@@ -94,45 +86,32 @@ def get_token_info():
     return jsonify(res)
 
 @api.route('/info/', methods=['POST'])
+@auth.login_required
 @limiter.limit("10 per minute")
 def get_user_info():
+    '''获得用户基本信息'''
     form = TokenForm().validate_for_api()
-    s = TimedJSONWebSignatureSerializer(
-        current_app.config['SECRET_KEY'],
-    )
-    try:
-        data = s.loads(form.token.data, return_header=True)
-    except SignatureExpired:
-        raise AuthFailed(msg='token过期')
-    except BadSignature:
-        raise AuthFailed(msg='token错误')
+    data = auto_load_token(form.token.data)
     uid = data[0]['uid']
     user = User.query.get_or_404(uid)
     return jsonify(user)
 
 
 
-# @api.route('/get-appkey/', methods=['POST'])
-# def get_appkey():
-#     '''
-#     用户升级为开发者，获取appkey
-#     '''
-#
+@api.route('/get-app-key/', methods=['POST'])
+@auth.login_required
+def get_app_key():
+    '''
+    用户升级为开发者，获取appkey
+    '''
+    uid = g.current_user.uid
+    User.register_developer(uid)
+    return CreateSuccess()
 
 
-def generate_auth_token(uid, scope=None, exp=7200):
-    '''
-    生成令牌
-    :param uid:
-    :param scope:
-    :param exp:
-    :return:
-    '''
-    s = TimedJSONWebSignatureSerializer(
-        current_app.config['SECRET_KEY'],
-        expires_in=exp
-    )
-    return s.dumps({
-        'uid': uid,
-        'scope': scope
-    })
+
+@api.route('/appkey/', methods=['POST'])
+@appkey_require
+def testappkey():
+    return CreateSuccess()
+

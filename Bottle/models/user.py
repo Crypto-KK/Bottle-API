@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from Bottle.models.base import BaseModel, db
 from Bottle.utils.enums import UserTypeEnum
 from Bottle.utils.generate_key import generate_app_key
-from Bottle.errors.error_code import AuthFailed, Forbidden
+from Bottle.errors.error_code import AuthFailed, Forbidden, IsDeveloperError
 
 
 class User(BaseModel):
@@ -46,9 +46,12 @@ class User(BaseModel):
 
 
     @staticmethod
-    def register_developer():
+    def register_developer(uid):
+        '''用户权限升级为开发者'''
         with db.auto_commit():
-            user = User()
+            user = User.query.get_or_404(uid)
+            if user.scope != UserTypeEnum.NORMAL.value:
+                raise IsDeveloperError()
             user.scope = UserTypeEnum.DEVELOPER.value
             user.app_key = generate_app_key(user.id)
             db.session.add(user)

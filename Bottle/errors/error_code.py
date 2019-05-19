@@ -49,3 +49,14 @@ class VerifyCodeError(APIException):
     code = 401
     msg = '验证码错误'
     error_code = 2001
+
+
+class IsDeveloperError(APIException):
+    code = 401
+    msg = '已经申请了appkey'
+    error_code = 2002
+
+class AppKeyError(APIException):
+    code = 401
+    msg = 'appkey错误'
+    error_code = 2003
