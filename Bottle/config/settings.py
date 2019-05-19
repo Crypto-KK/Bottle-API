@@ -23,6 +23,7 @@ class BaseConfig:
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     MAIL_SENDER = os.getenv('MAIL_SENDER')
     REDIS_EXP = 300
+    MAX_PER_PAGE = 20
 
 
 class DevelopmentConfig(BaseConfig):

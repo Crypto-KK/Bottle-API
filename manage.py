@@ -3,7 +3,7 @@ from flask_script import Manager
 from Bottle import db
 from server import app
 from Bottle.models.user import User
-
+from Bottle.models.movie import NewMovie, HotMovie, ClassicMovie
 migrate = Migrate(app, db)
 manager = Manager(app)
 

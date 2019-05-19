@@ -60,3 +60,10 @@ class AppKeyError(APIException):
     code = 401
     msg = 'appkey错误'
     error_code = 2003
+
+
+
+class MovieTypeError(APIException):
+    code = 401
+    msg = '电影类型错误'
+    error_code = 3001
