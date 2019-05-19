@@ -54,8 +54,6 @@ def register():
     return VerifyCodeError()
 
 
-
-
 @api.route('/login/', methods=['POST'])
 def login():
     '''登录'''
@@ -72,6 +70,7 @@ def login():
 
 
 @api.route('/token/', methods=['POST'])
+@auth.login_required
 def get_token_info():
     '''获取令牌具体信息'''
     form = TokenForm().validate_for_api()
@@ -85,16 +84,24 @@ def get_token_info():
 
     return jsonify(res)
 
-@api.route('/info/', methods=['POST'])
+
+@api.route('/info/', methods=['GET'])
 @auth.login_required
 @limiter.limit("10 per minute")
 def get_user_info():
     '''获得用户基本信息'''
-    form = TokenForm().validate_for_api()
-    data = auto_load_token(form.token.data)
-    uid = data[0]['uid']
+    uid = g.current_user.uid
     user = User.query.get_or_404(uid)
     return jsonify(user)
+
+
+@api.route('/info/<uid>/', methods=['GET'])
+@auth.login_required
+def admin_get_user_info(uid):
+    '''admin获得用户基本信息'''
+    user = User.query.get_or_404(uid)
+    return jsonify(user)
+
 
 
 
@@ -108,10 +115,4 @@ def get_app_key():
     User.register_developer(uid)
     return CreateSuccess()
 
-
-
-@api.route('/appkey/', methods=['POST'])
-@appkey_require
-def testappkey():
-    return CreateSuccess()
 

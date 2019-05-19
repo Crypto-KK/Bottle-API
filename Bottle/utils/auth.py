@@ -4,9 +4,10 @@ from collections import namedtuple
 from flask import current_app, g, request
 from itsdangerous import TimedJSONWebSignatureSerializer, BadSignature,\
     SignatureExpired
-from flask_httpauth import HTTPTokenAuth, HTTPAuth
+from flask_httpauth import HTTPTokenAuth
 from Bottle.errors.error_code import AuthFailed, Forbidden, AppKeyError
 from Bottle.models.user import User as UserModel
+from Bottle.utils.scope import has_permission
 
 
 auth = HTTPTokenAuth(scheme='JWT')
@@ -28,6 +29,9 @@ def verify_token(token):
     uid = data['uid']
     scope = data['scope']
     user = User(uid, scope)
+    allow = has_permission(scope, request.endpoint)
+    if not allow:
+        raise Forbidden()
     if user:
         g.current_user = user
         return True

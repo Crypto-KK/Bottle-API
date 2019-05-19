@@ -1,11 +1,11 @@
 
-from flask import jsonify, current_app, g, request
+from flask import jsonify, request
 
 from Bottle.utils.auth import appkey_require
 from Bottle.utils.redprint import Redprint
 from Bottle.models.movie import HotMovie, NewMovie, ClassicMovie
 from Bottle.forms.movie import MovieForm
-from Bottle.errors.error_code import CreateSuccess, MovieTypeError
+from Bottle.errors.error_code import MovieTypeError
 from extensions import limiter
 from Bottle.utils.paginator import get_limit_offset_data
 
