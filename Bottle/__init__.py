@@ -3,8 +3,6 @@ from decimal import Decimal
 
 from flask import Flask, g
 
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from flask.json import JSONEncoder as _JSONEncoder
 from Bottle.errors.error_code import ServerError
 from Bottle.config.settings import config
